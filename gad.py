@@ -26,9 +26,6 @@ def highlightFace(net, frame, conf_threshold=0.7):
     return frameOpencvDnn,faceBoxes
 
 
-# parser=argparse.ArgumentParser()
-# parser.add_argument('--image')
-
 oldname = sys.argv[1]
 newname=sys.argv[1]+".jpg"
 os.rename(oldname,newname)
