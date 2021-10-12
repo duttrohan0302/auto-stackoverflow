@@ -63,12 +63,20 @@ app.post('/upload-age-gender', upload.single('upload'), (req, res) => {
     const python = spawn('python', ['gad.py',`data/`+req.file.filename])
 
     python.stdout.on('data', function (data) {
-      console.log('Pipe data from python script ...')
-      console.log(data.toString())
+      try{
+        console.log('Pipe data from python script ...')
+        console.log(data.toString())
+      }catch(dataError){
+        console.log("DATA ERROR:",dataError)
+      }
     })
     python.stdout.on('close', function (code) {
+      try{
         console.log('Closed with code ',code)
         res.render('pages/gadImage',{data: "Person.jpeg"});
+      }catch(closeError){
+        console.log("CLOSE ERROR:",closeError)
+      }
     })
     
 
