@@ -30,19 +30,12 @@ oldname = sys.argv[1]
 newname=sys.argv[1]+".jpg"
 os.rename(oldname,newname)
 
-print("file renamed\n")
-# newname = sys.argv[1]
-# args={"image":newname}
-
 faceProto="opencv_face_detector.pbtxt"
 faceModel="opencv_face_detector_uint8.pb"
 ageProto="age_deploy.prototxt"
 ageModel="age_net.caffemodel"
 genderProto="gender_deploy.prototxt"
 genderModel="gender_net.caffemodel"
-
-print("name given to predefined models\n")
-
 
 MODEL_MEAN_VALUES=(78.4263377603, 87.7689143744, 114.895847746)
 ageList=['(0-2)', '(4-6)', '(8-12)', '(15-20)', '(25-32)', '(38-43)', '(48-53)', '(60-100)']
@@ -52,30 +45,17 @@ faceNet=cv2.dnn.readNet(faceModel,faceProto)
 ageNet=cv2.dnn.readNet(ageModel,ageProto)
 genderNet=cv2.dnn.readNet(genderModel,genderProto)
 
-print("Gender net\n")
-
-# video=cv2.VideoCapture(args.image if args.image else 0)
-# video=cv2.VideoCapture(newname)
 img = cv2.imread(newname, cv2.IMREAD_COLOR)
 
-print("video captured\n")
 padding=20
 
-# hasFrame,frame=video.read()
-# if not hasFrame:
-#     cv2.waitKey()
-#     break
-print("has frame\n")
 frame = img
 resultImg,faceBoxes=highlightFace(faceNet,frame)
-print("Faceboxes,",faceBoxes)
 if not faceBoxes:
     print("No face detected")
 
-print("face detected\n")
 
 for faceBox in faceBoxes:
-    print("In facebox\n",faceBox)
     face=frame[max(0,faceBox[1]-padding):
                    min(faceBox[3]+padding,frame.shape[0]-1),max(0,faceBox[0]-padding)
                    :min(faceBox[2]+padding, frame.shape[1]-1)]
