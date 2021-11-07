@@ -18,6 +18,21 @@ const upload = multer({
     cb(undefined, true)
   }
 })
+
+const upload_py = multer({
+  dest: 'data',
+  limits: {
+    fileSize: 1000000,
+  },
+  
+  fileFilter(req, file, cb) {
+  
+  if (!file.originalname.match(/\.(py)$/)){
+    cb(new Error('Please upload an python file.'))
+  }
+    cb(undefined, true)
+  }
+})
   
 app.set('view engine', 'ejs');
 
@@ -85,7 +100,43 @@ app.post('/upload-age-gender', upload.single('upload'), (req, res) => {
     res.status(400).json({msg:"Img Not Received"})
   }
 })
+app.get('/auto-stackoverflow',(req,res)=>{
+  console.log("Age-Gender Route")
+  res.render('pages/stackOverflow',{data: ""});
+})
 
+app.post('/upload-py',upload_py.single('upload'),(req,res)=>{
+  if(req.file){
+
+    console.log("File name",req.file.filename)
+    const python = spawn('python', ['project3.py',`data/`+req.file.filename])
+    var output = ""
+    python.stdout.on('data', function (data) {
+      try{
+        console.log('Pipe data from python script ...')
+        output+=data.toString()
+      }catch(dataError){
+        console.log("DATA ERROR:",dataError)
+      }
+    })
+    python.stdout.on('close', function (code) {
+      try{
+        console.log('Closed with code ',code)
+        console.log("FINAL OUTPUT: ",output)
+        const outputUrl = output.split("'").filter(x=>x.length>5)
+        console.log(outputUrl.length)
+        res.render('pages/stackOverflow',{data: outputUrl})
+        // outputUrl.forEach(url=>res.redirect(301,url))
+        // res.render('pages/stackOverflow');
+      }catch(closeError){
+        console.log("CLOSE ERROR:",closeError)
+      }
+    })
+    
+  }else{
+    res.status(400).json({msg:"Python file Not Received"})
+  }
+})
 
 app.get('/',(req,res)=>{
   console.log("Home Route")
